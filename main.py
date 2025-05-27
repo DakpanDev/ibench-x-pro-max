@@ -1,20 +1,22 @@
 import json
 import os
 import pprint
-from save_results import save_benchmark_results
+from save_results import save_general_results, save_startup_results
 
 # Command Building
 __START_TEST_COMMAND = 'xcodebuild test'
 __SCHEME_ARG = '-scheme MyTerminal'
 __PROJECT_ARG = '-project'
 __DESTINATION_ARG = '-destination'
-__TESTING_ARG = '-only-testing:MyTerminalUITests/MyTerminalUITests'
+__GENERAL_TESTING_ARG = '-only-testing:MyTerminalUITests/MyTerminalUITests'
+__STARTUP_TESTING_ARG = '-only-testing:MyTerminalUITests/MyTerminalStartupTests'
 
 # Test names
 LOAD_FLIGHTS = 'LoadFlights'
 OPEN_DETAILS = 'OpenDetails'
 BOOKMARK_FLIGHT = 'BookmarkFlight'
 LOAD_BOOKMARS = 'LoadBookmarks'
+STARTUP = 'Startup'
 
 # Relevant metrics
 CPU_CYCLES_KC = 'CPU Cycles'
@@ -24,19 +26,42 @@ STARTUP_TIME_S = 'Duration'
 # Other
 __VALUES_KEY = 'values: '
 __VERSION = 'Regular'
+__STARTUP_ITERATIONS = 10
 
 def main():
     project_path = '/Users/mitchell.tol/Projects/MyTerminal/iOS/myterminal-ios'
     device_id = '00008101-001D04260190001E'
-    destination = f'\'id={device_id}\''
-    metrics_stream = os.popen(f'{__START_TEST_COMMAND} {__SCHEME_ARG} {__PROJECT_ARG} {project_path}/MyTerminal.xcodeproj ' + 
-             f'{__DESTINATION_ARG} {destination} {__TESTING_ARG} | grep "{project_path}" | grep "Test Case" ' + 
-             f'| grep -e "{CPU_CYCLES_KC}" -e "{ABSOLUTE_MEMORY_KB}"').read()
-    metrics_lines = metrics_stream.splitlines()
+
+    # CPU and Memory
+    general_stream = __run_test(project_path, device_id)
+    metrics_lines = general_stream.splitlines()
     grouped = __group_results(metrics_lines, [LOAD_FLIGHTS, OPEN_DETAILS, BOOKMARK_FLIGHT, LOAD_BOOKMARS])
     parsed = __parse_results(grouped)
     pprint.pp(parsed)
-    save_benchmark_results(__VERSION, parsed, STARTUP_TIME_S, CPU_CYCLES_KC, ABSOLUTE_MEMORY_KB)
+    save_general_results(__VERSION, parsed, CPU_CYCLES_KC, ABSOLUTE_MEMORY_KB)
+
+    # Startup
+    startup_results = []
+    for _ in range(__STARTUP_ITERATIONS):
+        startup_stream = __run_startup_test(project_path, device_id)
+        metrics_lines = startup_stream.splitlines()
+        grouped = __group_results(metrics_lines, [STARTUP])
+        parsed = __parse_startup_results(grouped)
+        if parsed != None: startup_results.append(parsed)
+    print(startup_results)
+    save_startup_results(__VERSION, startup_results)
+
+def __run_test(project_path: str, device_id: str) -> str:
+    destination = f'\'id={device_id}\''
+    return os.popen(f'{__START_TEST_COMMAND} {__SCHEME_ARG} {__PROJECT_ARG} {project_path}/MyTerminal.xcodeproj ' + 
+             f'{__DESTINATION_ARG} {destination} {__GENERAL_TESTING_ARG} | grep "{project_path}" | grep "Test Case" ' + 
+             f'| grep -e "{CPU_CYCLES_KC}" -e "{ABSOLUTE_MEMORY_KB}"').read()
+
+def __run_startup_test(project_path: str, device_id: str) -> str:
+    destination = f'\'id={device_id}\''
+    return os.popen(f'{__START_TEST_COMMAND} {__SCHEME_ARG} {__PROJECT_ARG} {project_path}/MyTerminal.xcodeproj ' + 
+             f'{__DESTINATION_ARG} {destination} {__STARTUP_TESTING_ARG} | grep "{project_path}" | grep "Test Case" ' + 
+             f'| grep -e "{STARTUP_TIME_S}"').read()
 
 def __group_results(lines: list[str], test_names: list[str]) -> dict:
     result = {}
@@ -53,6 +78,11 @@ def __parse_results(results_dict: dict) -> dict:
             per_metric[metric] = values
         parsed[test] = per_metric
     return parsed
+
+def __parse_startup_results(results_dict: dict) -> float | None:
+    parsed = __parse_results(results_dict)[STARTUP].get(STARTUP_TIME_S)
+    if parsed == None: return None
+    return parsed[0] if len(parsed) > 0 else None
 
 def __parse_single_result(result: str) -> tuple | None:
     if CPU_CYCLES_KC in result: key = CPU_CYCLES_KC

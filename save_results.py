@@ -14,20 +14,18 @@ STARTUP_TIMES_FIELDNAME = 'Startup Time (ms)'
 CPU_USAGE_FIELDNAME = 'CPU Usage (kC)'
 MEMORY_USAGE_FIELDNAME = 'Memory Usage (kB)'
 
-def save_benchmark_results(version: str, measurements: dict, 
-                           startup_metric: str, cpu_metric: str, memory_metric: str):
+def save_general_results(version: str, measurements: dict, cpu_metric: str, memory_metric: str):
     path = __create_path(version)
-
-    # startup_times = measurements.values()
-    # startup_times = list(map(lambda x: x[startup_metric], startup_times))
-    # startup_times = sum(startup_times, [])
-    # __save_startup_time(path, startup_times)
 
     cpu_usage = __get_by_metric(cpu_metric, measurements)
     __save_cpu_usage(path, cpu_usage)
 
     memory_usage = __get_by_metric(memory_metric, measurements)
     __save_memory_usage(path, memory_usage)
+
+def save_startup_results(version: str, measurements: list[float]):
+    path = __create_path(version)
+    __save_startup_time(path, measurements)
 
 def __get_by_metric(metric: str, measurements: dict) -> list:
     values = map(lambda x: (x[0], x[1].get(metric)), list(measurements.items()))
