@@ -1,7 +1,7 @@
 import json
 import os
 import pprint
-from save_results import save_general_results, save_startup_results
+from save_results import *
 
 # Command Building
 __START_TEST_COMMAND = 'xcodebuild test'
@@ -10,13 +10,6 @@ __PROJECT_ARG = '-project'
 __DESTINATION_ARG = '-destination'
 __GENERAL_TESTING_ARG = '-only-testing:MyTerminalUITests/MyTerminalUITests'
 __STARTUP_TESTING_ARG = '-only-testing:MyTerminalUITests/MyTerminalStartupTests'
-
-# Test names
-LOAD_FLIGHTS = 'LoadFlights'
-OPEN_DETAILS = 'OpenDetails'
-BOOKMARK_FLIGHT = 'BookmarkFlight'
-LOAD_BOOKMARS = 'LoadBookmarks'
-STARTUP = 'Startup'
 
 # Relevant metrics
 CPU_CYCLES_KC = 'CPU Cycles'

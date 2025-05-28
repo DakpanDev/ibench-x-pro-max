@@ -3,6 +3,13 @@ import os
 
 RESULTS_FOLDER = 'results'
 
+# Test names
+LOAD_FLIGHTS = 'LoadFlights'
+OPEN_DETAILS = 'OpenDetails'
+BOOKMARK_FLIGHT = 'BookmarkFlight'
+LOAD_BOOKMARS = 'LoadBookmarks'
+STARTUP = 'Startup'
+
 # Filenames
 STARTUP_TIMES_FILENAME = 'startup_time.csv'
 CPU_USAGE_FILENAME = 'cpu_usage.csv'
@@ -14,7 +21,7 @@ CPU_USAGE_FIELDNAME = 'CPU Usage (kC)'
 MEMORY_USAGE_FIELDNAME = 'Memory Usage (kB)'
 
 def save_general_results(version: str, measurements: dict, cpu_metric: str, memory_metric: str):
-    path = __create_path(version)
+    path = create_path(version)
 
     cpu_usage = __get_by_metric(cpu_metric, measurements)
     __save_cpu_usage(path, cpu_usage)
@@ -23,7 +30,7 @@ def save_general_results(version: str, measurements: dict, cpu_metric: str, memo
     __save_memory_usage(path, memory_usage)
 
 def save_startup_results(version: str, measurements: list[float]):
-    path = __create_path(version)
+    path = create_path(version)
     __save_startup_time(path, measurements)
 
 def __get_by_metric(metric: str, measurements: dict) -> list:
@@ -56,7 +63,7 @@ def __save_generic_usage(path: str, filename: str, measurements: list[tuple]):
             row = list(map(lambda x: x[i], values))
             writer.writerow(row)
 
-def __create_path(version: str) -> str:
+def create_path(version: str) -> str:
     path = f'{RESULTS_FOLDER}/{version}'
     if not os.path.exists(path): os.makedirs(path)
     return path
