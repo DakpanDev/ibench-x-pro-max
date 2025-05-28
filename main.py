@@ -1,6 +1,7 @@
 import json
 import os
 import pprint
+import time
 from save_results import *
 
 # Command Building
@@ -26,23 +27,29 @@ def main():
     device_id = '00008101-001D04260190001E'
 
     # CPU and Memory
+    start_time = time.time()
     general_stream = __run_test(project_path, device_id)
+    end_time = time.time()
     metrics_lines = general_stream.splitlines()
     grouped = __group_results(metrics_lines, [LOAD_FLIGHTS, OPEN_DETAILS, BOOKMARK_FLIGHT, LOAD_BOOKMARS])
     parsed = __parse_results(grouped)
     pprint.pp(parsed)
     save_general_results(__VERSION, parsed, CPU_CYCLES_KC, ABSOLUTE_MEMORY_KB)
+    print(f'Total time taken for general benchmark: {end_time - start_time}s')
 
     # Startup
     startup_results = []
+    start_time = time.time()
     for _ in range(__STARTUP_ITERATIONS):
         startup_stream = __run_startup_test(project_path, device_id)
         metrics_lines = startup_stream.splitlines()
         grouped = __group_results(metrics_lines, [STARTUP])
         parsed = __parse_startup_results(grouped)
         if parsed != None: startup_results.append(parsed)
+    end_time = time.time()
     print(startup_results)
     save_startup_results(__VERSION, startup_results)
+    print(f'Total time taken for startup time benchmark: {end_time - start_time}s')
 
 def __run_test(project_path: str, device_id: str) -> str:
     destination = f'\'id={device_id}\''
