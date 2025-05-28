@@ -19,11 +19,11 @@ STARTUP_TIME_S = 'Duration'
 
 # Other
 __VALUES_KEY = 'values: '
-__VERSION = 'KMP'
+__VERSION = 'Regular'
 __STARTUP_ITERATIONS = 10
 
 def main():
-    project_path = '/Users/mitchell.tol/Projects/MyTerminal/KMP/myterminal-kmp-ios'
+    project_path = '/Users/mitchell.tol/Projects/MyTerminal/iOS/myterminal-ios'
     device_id = '00008101-001D04260190001E'
 
     # CPU and Memory

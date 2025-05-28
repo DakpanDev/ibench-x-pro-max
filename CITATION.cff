@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+title: iBenchXProMax
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Mitchell
+    family-names: Tol
+    email: mitchell.tol@framna.com
+    affiliation: Framna
+repository-code: 'https://github.com/DakpanDev/ibench-x-pro-max'
+date-released: '2025-05-06'
