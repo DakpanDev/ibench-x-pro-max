@@ -1,6 +1,5 @@
 import csv
 import os
-import pprint
 
 RESULTS_FOLDER = 'results'
 
