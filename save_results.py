@@ -19,6 +19,8 @@ MEMORY_USAGE_FILENAME = 'memory_usage.csv'
 STARTUP_TIMES_FIELDNAME = 'Startup Time (ms)'
 CPU_USAGE_FIELDNAME = 'CPU Usage (kC)'
 MEMORY_USAGE_FIELDNAME = 'Memory Usage (kB)'
+TIME_ELAPSED_FIELDNAME = 'Time Elapsed (s)'
+FRAMERATE_FIELDNAME = 'Framerate (FPS)'
 
 def save_general_results(version: str, measurements: dict, cpu_metric: str, memory_metric: str):
     path = create_path(version)

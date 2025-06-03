@@ -2,9 +2,10 @@ PLATFORM_ANDROID = 'android'
 PLATFORM_IOS = 'ios'
 
 __arguments = {
-    'cpu': False,       # Measure CPU usage
-    'memory': False,    # Measure memory usage
-    'startup': False,   # Measure startup time
+    'cpu': False,       # Plot CPU usage
+    'memory': False,    # Plot memory usage
+    'startup': False,   # Plot startup time
+    'framerate': False, # Plot framerate
 }
 
 def parse_parameters(args: list[str]) -> dict:
